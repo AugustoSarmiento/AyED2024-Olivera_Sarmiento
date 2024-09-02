@@ -46,3 +46,17 @@ for i in range(500):
 print(lista_prueba)
 print(bubble_sort(lista_prueba))
 print(radix_sort(lista_prueba))
+
+
+#consigna 2
+class nodo:   #creo clase nodo
+    def __init__(self,dato=None):
+        self.dato= dato
+        self.siguiente= None
+        self.anterior= None
+
+class listdoben: #creo lista doblemente enlazada 
+    def __init__ (self):
+        self.cabeza = None
+        self.cola= None
+        self.tamanio= 0 
