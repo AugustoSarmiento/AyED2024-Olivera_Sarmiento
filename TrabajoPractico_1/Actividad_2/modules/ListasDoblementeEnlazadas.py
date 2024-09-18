@@ -10,35 +10,50 @@ class ListaDoblementeEnlazada:
         self.cabeza = None
         self.cola =None
         self.tamanio =0
+    
+    def mostrar_lista(self):
+        actual = self.cabeza
+        while actual:
+            print(actual.dato, end=" ")
+            actual = actual.siguiente
+        print()
+    
+    def __iter__(self):
+        actual = self.cabeza
+        while actual:
+            yield actual.dato
+            actual = actual.siguiente
+
 
     def agregar_al_final(self, item):
         nuevo_nodo = Nodo(item)
         if self.cabeza is None:
             self.cabeza = nuevo_nodo
             self.cola =nuevo_nodo
-
+            self.tamanio += 1
         else:
             self.cola.siguiente = nuevo_nodo
             nuevo_nodo.anterior = self.cola
             self.cola = nuevo_nodo  
-        self.tamanio += 1
+            self.tamanio += 1
     
     def agregar_al_inicio(self, item):
         nuevo_nodo = Nodo(item)
         if self.cabeza is None:
-            self.cabeza = nuevo_nodo
+            self.cabeza = self.cola = nuevo_nodo
             self.tamanio += 1
         else:
             self.cabeza.anterior = nuevo_nodo
             nuevo_nodo.siguiente = self.cabeza
             self.cabeza = nuevo_nodo
             self.tamanio+=1
+
             
     def esta_vacia(self): 
         if self.cabeza == None:
-            return (print(True))
+            return True
         else:
-            return (print(False))
+            return False
                
     def __len__(self):
         cant_elementos = self.tamanio
@@ -67,8 +82,8 @@ class ListaDoblementeEnlazada:
             nuevo_nodo.siguiente = actual.siguiente
             actual.siguiente.anterior = nuevo_nodo
             actual.siguiente = nuevo_nodo
+            self.tamanio +=1
 
-        self.tamanio += 1
 
     def extraer(self, posicion=None):
         if self.esta_vacia():
@@ -107,9 +122,8 @@ class ListaDoblementeEnlazada:
     def copiar(self):
         nueva_lista = ListaDoblementeEnlazada()
         actual = self.cabeza
-
         while actual:
-            nuevo_nodo = actual
+            nuevo_nodo = Nodo(actual.dato)  # Crea un nuevo nodo con el mismo dato
             if nueva_lista.cabeza is None:
                 nueva_lista.cabeza = nuevo_nodo
                 nueva_lista.cola = nuevo_nodo
@@ -119,7 +133,6 @@ class ListaDoblementeEnlazada:
                 nueva_lista.cola = nuevo_nodo
             actual = actual.siguiente
         nueva_lista.tamanio = self.tamanio
-
         return nueva_lista
 
     def invertir(self):
@@ -148,12 +161,12 @@ class ListaDoblementeEnlazada:
         return nueva_lista
     
 if __name__ == "__main__":
-    nodo = Nodo(5)
-    nodo2 = Nodo(6)
-    print(nodo.dato)
+
+    NuevoValor = 25
     lista = ListaDoblementeEnlazada()
-    lista.agregar_al_inicio(nodo)
-    lista.agregar_al_inicio(nodo2)
-    lista.agregar_al_inicio(nodo)
-    print(len(lista))
+    for i in range(5):
+        lista.agregar_al_final(i)
+    lista.insertar(52, 0)
+    lista.insertar(10, 4)
+    lista.mostrar_lista()
     print(lista.tamanio)
