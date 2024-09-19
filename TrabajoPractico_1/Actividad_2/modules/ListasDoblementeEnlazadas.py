@@ -62,27 +62,26 @@ class ListaDoblementeEnlazada:
     def insertar(self, item, posicion=None):
         if posicion is None:
             self.agregar_al_final(item)
-            
-        if posicion < 0 or posicion > self.tamanio:
+        elif posicion < 0 or posicion > self.tamanio:
             raise ValueError("La posición dada no está incluída en la lista.")
-
-        if posicion == 0:
-            self.agregar_al_inicio(item)
-
-        if posicion == self.tamanio:
-            self.agregar_al_final(item)
-
         else:
             nuevo_nodo = Nodo(item)
-            actual = self.cabeza
-            for i in range(posicion - 1):
-                actual = actual.siguiente
+            if posicion == 0:
+                nuevo_nodo.siguiente = self.cabeza
+                if self.cabeza:
+                    self.cabeza.anterior = nuevo_nodo
+                self.cabeza = nuevo_nodo
+            else:
+                actual = self.cabeza
+                for _ in range(posicion - 1):
+                    actual = actual.siguiente
+                nuevo_nodo.anterior = actual
+                nuevo_nodo.siguiente = actual.siguiente
+                if actual.siguiente:
+                    actual.siguiente.anterior = nuevo_nodo
+                actual.siguiente = nuevo_nodo
 
-            nuevo_nodo.anterior = actual
-            nuevo_nodo.siguiente = actual.siguiente
-            actual.siguiente.anterior = nuevo_nodo
-            actual.siguiente = nuevo_nodo
-            self.tamanio +=1
+            self.tamanio += 1
 
 
     def extraer(self, posicion=None):
@@ -146,15 +145,21 @@ class ListaDoblementeEnlazada:
         return self
 
     def concatenar(self, otra_lista):
-        if self.cola is None:
-            self.cabeza = otra_lista.cabeza
-            self.cola = otra_lista.cola
+        copia_otra_lista = otra_lista.copiar()
+
+        if self.cola is None:  # Si la lista actual está vacía
+            self.cabeza = copia_otra_lista.cabeza
+            self.cola = copia_otra_lista.cola
+            self.tamanio = copia_otra_lista.tamanio
         else:
-            self.cola.siguiente = otra_lista.cabeza
-            otra_lista.cabeza.anterior = self.cola
-            self.cola = otra_lista.cola
+            self.cola.siguiente = copia_otra_lista.cabeza
+            if copia_otra_lista.cabeza:
+                copia_otra_lista.cabeza.anterior = self.cola
+                self.cola = copia_otra_lista.cola
+                self.tamanio += copia_otra_lista.tamanio
 
         return self
+    
     def __add__(self, otra_lista):
         nueva_lista = self.copiar()
         nueva_lista.concatenar(otra_lista)
@@ -164,9 +169,11 @@ if __name__ == "__main__":
 
     NuevoValor = 25
     lista = ListaDoblementeEnlazada()
+    lista2 = ListaDoblementeEnlazada()
     for i in range(5):
         lista.agregar_al_final(i)
-    lista.insertar(52, 0)
-    lista.insertar(10, 4)
-    lista.mostrar_lista()
-    print(lista.tamanio)
+    for i in range(5):
+        lista2.agregar_al_final(i)
+    lista.concatenar(lista2)
+    lista2.mostrar_lista()
+    print(lista2.cabeza.anterior)
