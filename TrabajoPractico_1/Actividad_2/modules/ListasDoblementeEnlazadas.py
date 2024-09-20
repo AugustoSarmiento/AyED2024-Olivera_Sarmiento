@@ -1,4 +1,3 @@
-#consigna 2
 class Nodo:
     def __init__(self, dato):
         self.dato = dato
@@ -17,13 +16,6 @@ class ListaDoblementeEnlazada:
             print(actual.dato, end=" ")
             actual = actual.siguiente
         print()
-    
-    def __iter__(self):
-        actual = self.cabeza
-        while actual:
-            yield actual.dato
-            actual = actual.siguiente
-
 
     def agregar_al_final(self, item):
         nuevo_nodo = Nodo(item)
@@ -47,8 +39,7 @@ class ListaDoblementeEnlazada:
             nuevo_nodo.siguiente = self.cabeza
             self.cabeza = nuevo_nodo
             self.tamanio+=1
-
-            
+         
     def esta_vacia(self): 
         if self.cabeza == None:
             return True
@@ -82,7 +73,6 @@ class ListaDoblementeEnlazada:
                 actual.siguiente = nuevo_nodo
 
             self.tamanio += 1
-
 
     def extraer(self, posicion=None):
         if self.esta_vacia():
@@ -122,7 +112,7 @@ class ListaDoblementeEnlazada:
         nueva_lista = ListaDoblementeEnlazada()
         actual = self.cabeza
         while actual:
-            nuevo_nodo = Nodo(actual.dato)  # Crea un nuevo nodo con el mismo dato
+            nuevo_nodo = Nodo(actual.dato)
             if nueva_lista.cabeza is None:
                 nueva_lista.cabeza = nuevo_nodo
                 nueva_lista.cola = nuevo_nodo
@@ -147,7 +137,7 @@ class ListaDoblementeEnlazada:
     def concatenar(self, otra_lista):
         copia_otra_lista = otra_lista.copiar()
 
-        if self.cola is None:  # Si la lista actual está vacía
+        if self.cola is None:
             self.cabeza = copia_otra_lista.cabeza
             self.cola = copia_otra_lista.cola
             self.tamanio = copia_otra_lista.tamanio
@@ -165,7 +155,7 @@ class ListaDoblementeEnlazada:
         nueva_lista.concatenar(otra_lista)
         return nueva_lista
     
-if __name__ == "__main__":
+if __name__ == "__main__": #pruebas para solución de errores
 
     NuevoValor = 25
     lista = ListaDoblementeEnlazada()
@@ -175,5 +165,5 @@ if __name__ == "__main__":
     for i in range(5):
         lista2.agregar_al_final(i)
     lista.concatenar(lista2)
+    lista2.extraer(-15)
     lista2.mostrar_lista()
-    print(lista2.cabeza.anterior)
