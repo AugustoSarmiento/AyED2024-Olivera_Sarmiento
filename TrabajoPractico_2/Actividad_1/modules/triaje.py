@@ -1,51 +1,187 @@
-# -*- coding: utf-8 -*-
-"""
-Sala de emergencias con cola de prioridad
-"""
+class NodoABB:
+    def __init__(self, clave, valor):
+        self.clave = clave
+        self.cargaUtil = valor
+        self.hijoIzquierdo = None
+        self.hijoDerecho = None
+        self.padre = None
 
-import time
-import datetime
-import random
-from modulos.paciente import Paciente
-from cola_prioridad import ColaPrioridad  # Estructura de datos genérica
+    def esHoja(self):
+        return self.hijoIzquierdo is None and self.hijoDerecho is None
 
-n = 20  # cantidad de ciclos de simulación
-cola_de_espera = ColaPrioridad()  # Cola de prioridad para manejar los pacientes
+    def tieneHijoIzquierdo(self):
+        return self.hijoIzquierdo is not None
 
-# Ciclo que gestiona la simulación
-for i in range(n):
-    # Fecha y hora de entrada de un paciente
-    ahora = datetime.datetime.now()
-    fecha_y_hora = ahora.strftime('%d/%m/%Y %H:%M:%S')
-    print('-*-'*15)
-    print('\n', fecha_y_hora, '\n')
+    def tieneHijoDerecho(self):
+        return self.hijoDerecho is not None
 
-    # Se crea un paciente por segundo
-    # La criticidad del paciente es aleatoria
-    paciente = Paciente()
-    print(f'Nuevo paciente ingresado: {paciente}')
+    def tieneAmbosHijos(self):
+        return self.hijoIzquierdo is not None and self.hijoDerecho is not None
 
-    # Se agrega el paciente a la cola con su nivel de prioridad (riesgo)
-    cola_de_espera.agregar(paciente.nivel_riesgo, paciente)
+    def reemplazarDato(self, clave, valor, hi, hd):
+        self.clave = clave
+        self.cargaUtil = valor
+        self.hijoIzquierdo = hi
+        self.hijoDerecho = hd
+        if self.tieneHijoIzquierdo():
+            self.hijoIzquierdo.padre = self
+        if self.tieneHijoDerecho():
+            self.hijoDerecho.padre = self
 
-    # Atención de paciente en este ciclo: en el 50% de los casos
-    if random.random() < 0.5:
-        # Se atiende el paciente con mayor prioridad (menor nivel de riesgo)
-        paciente_atendido = cola_de_espera.atender()
-        if paciente_atendido:
-            print('*'*40)
-            print('Se atiende el paciente:', paciente_atendido)
-            print('*'*40)
+
+class ABB:
+    def __init__(self):
+        self.raiz = None
+        self.tamano = 0
+
+    def agregar(self, clave, valor):
+        if self.raiz:
+            self._agregar(clave, valor, self.raiz)
         else:
-            print('No hay pacientes para atender.')
+            self.raiz = NodoABB(clave, valor)
+        self.tamano += 1
 
-    print()
+    def _agregar(self, clave, valor, nodo_actual):
+        if clave < nodo_actual.clave:
+            if nodo_actual.tieneHijoIzquierdo():
+                self._agregar(clave, valor, nodo_actual.hijoIzquierdo)
+            else:
+                nodo_actual.hijoIzquierdo = NodoABB(clave, valor)
+                nodo_actual.hijoIzquierdo.padre = nodo_actual
+        else:
+            if nodo_actual.tieneHijoDerecho():
+                self._agregar(clave, valor, nodo_actual.hijoDerecho)
+            else:
+                nodo_actual.hijoDerecho = NodoABB(clave, valor)
+                nodo_actual.hijoDerecho.padre = nodo_actual
 
-    # Se muestran los pacientes restantes en la cola de espera
-    print('Pacientes que faltan atenderse:', cola_de_espera.cantidad())
-    print(cola_de_espera)
+    def obtener(self, clave):
+        if self.raiz:
+            res = self._obtener(clave, self.raiz)
+            if res:
+                return res.cargaUtil
+            else:
+                raise KeyError("Clave no encontrada en el árbol.")
+        else:
+            raise KeyError("Árbol vacío.")
 
-    print('-*-'*15)
-    
-    time.sleep(1)
+    def _obtener(self, clave, nodo_actual):
+        if not nodo_actual:
+            return None
+        elif clave == nodo_actual.clave:
+            return nodo_actual
+        elif clave < nodo_actual.clave:
+            return self._obtener(clave, nodo_actual.hijoIzquierdo)
+        else:
+            return self._obtener(clave, nodo_actual.hijoDerecho)
+
+    def eliminar(self, clave):
+        if self.tamano > 1:
+            nodo_a_eliminar = self._obtener(clave, self.raiz)
+            if nodo_a_eliminar:
+                self._eliminar_nodo(nodo_a_eliminar)
+                self.tamano -= 1
+            else:
+                raise KeyError("Clave no encontrada en el árbol.")
+        elif self.tamano == 1 and self.raiz.clave == clave:
+            self.raiz = None
+            self.tamano -= 1
+        else:
+            raise KeyError("Clave no encontrada en el árbol.")
+
+    def _eliminar_nodo(self, nodo):
+        if nodo.esHoja():  # Caso 1: nodo hoja
+            if nodo.padre:
+                if nodo == nodo.padre.hijoIzquierdo:
+                    nodo.padre.hijoIzquierdo = None
+                else:
+                    nodo.padre.hijoDerecho = None
+            else:
+                self.raiz = None
+        elif nodo.tieneAmbosHijos():  # Caso 3: nodo con dos hijos
+            sucesor = self._buscar_sucesor(nodo)
+            nodo.reemplazarDato(sucesor.clave, sucesor.cargaUtil, sucesor.hijoIzquierdo, sucesor.hijoDerecho)
+            self._eliminar_nodo(sucesor)
+        else:  # Caso 2: nodo con un solo hijo
+            if nodo.tieneHijoIzquierdo():
+                if nodo.padre:
+                    if nodo == nodo.padre.hijoIzquierdo:
+                        nodo.padre.hijoIzquierdo = nodo.hijoIzquierdo
+                    else:
+                        nodo.padre.hijoDerecho = nodo.hijoIzquierdo
+                    nodo.hijoIzquierdo.padre = nodo.padre
+                else:
+                    self.raiz = nodo.hijoIzquierdo
+                    self.raiz.padre = None
+            elif nodo.tieneHijoDerecho():
+                if nodo.padre:
+                    if nodo == nodo.padre.hijoIzquierdo:
+                        nodo.padre.hijoIzquierdo = nodo.hijoDerecho
+                    else:
+                        nodo.padre.hijoDerecho = nodo.hijoDerecho
+                    nodo.hijoDerecho.padre = nodo.padre
+                else:
+                    self.raiz = nodo.hijoDerecho
+                    self.raiz.padre = None
+            elif nodo.tieneAmbosHijos():  # Caso 3: nodo con dos hijos
+                sucesor = self._buscar_sucesor(nodo)
+                nodo.reemplazarDato(sucesor.clave, sucesor.cargaUtil, sucesor.hijoIzquierdo, sucesor.hijoDerecho)
+
+                # Actualizar enlaces a padres, considerando si el sucesor era hijo izquierdo o derecho
+                if sucesor.padre != nodo:  # Si el sucesor no es el hijo derecho directo
+                    sucesor.padre.hijoIzquierdo = sucesor.hijoDerecho
+                    if sucesor.hijoDerecho:
+                        sucesor.hijoDerecho.padre = sucesor.padre
+                else:
+                    nodo.hijoDerecho = sucesor.hijoDerecho
+                    if sucesor.hijoDerecho:
+                        sucesor.hijoDerecho.padre = nodo
+
+                # Enlazar el subárbol izquierdo del sucesor al nodo original
+                nodo.hijoIzquierdo = sucesor.hijoIzquierdo
+                if sucesor.hijoIzquierdo:
+                    sucesor.hijoIzquierdo.padre = nodo
+
+                self._eliminar_nodo(sucesor)
+
+    def _buscar_sucesor(self, nodo):
+        sucesor = nodo.hijoDerecho
+        while sucesor.tieneHijoIzquierdo():
+            sucesor = sucesor.hijoIzquierdo
+        return sucesor
+
+    def __contains__(self, clave):
+        try:
+            self.obtener(clave)
+            return True
+        except KeyError:
+            return False
+
+    def __getitem__(self, clave):
+        return self.obtener(clave)
+
+    def __setitem__(self, clave, valor):
+        self.agregar(clave, valor)
+
+    def __delitem__(self, clave):
+        self.eliminar(clave)
+
+    def __iter__(self):
+        if self.raiz:
+            return self._iter_in_order(self.raiz)
+        else:
+            return iter([])
+
+    def _iter_in_order(self, nodo_actual):
+        if nodo_actual:
+            if nodo_actual.tieneHijoIzquierdo():
+                yield from self._iter_in_order(nodo_actual.hijoIzquierdo)
+            yield (nodo_actual.clave, nodo_actual.cargaUtil)
+            if nodo_actual.tieneHijoDerecho():
+                yield from self._iter_in_order(nodo_actual.hijoDerecho)
+
+    def __len__(self):
+        return self.tamano
+
+
 
