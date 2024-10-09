@@ -18,14 +18,14 @@ class NodoABB:
     def tieneAmbosHijos(self):
         return self.hijoIzquierdo is not None and self.hijoDerecho is not None
 
-    def reemplazarDato(self, clave, valor, hi, hd):
+    def reemplazarDato(self, clave, valor, hi=None, hd=None):
         self.clave = clave
         self.cargaUtil = valor
         self.hijoIzquierdo = hi
         self.hijoDerecho = hd
-        if self.tieneHijoIzquierdo():
+        if self.hijoIzquierdo is not None:
             self.hijoIzquierdo.padre = self
-        if self.tieneHijoDerecho():
+        if self.hijoDerecho is not None:
             self.hijoDerecho.padre = self
 
 
@@ -66,7 +66,7 @@ class ABB:
             raise KeyError("Árbol vacío.")
 
     def _obtener(self, clave, nodo_actual):
-        if not nodo_actual:
+        if nodo_actual is None:
             return None
         elif clave == nodo_actual.clave:
             return nodo_actual
@@ -100,7 +100,7 @@ class ABB:
                 self.raiz = None
         elif nodo.tieneAmbosHijos():  # Caso 3: nodo con dos hijos
             sucesor = self._buscar_sucesor(nodo)
-            nodo.reemplazarDato(sucesor.clave, sucesor.cargaUtil, sucesor.hijoIzquierdo, sucesor.hijoDerecho)
+            nodo.reemplazarDato(sucesor.clave, sucesor.cargaUtil)
             self._eliminar_nodo(sucesor)
         else:  # Caso 2: nodo con un solo hijo
             if nodo.tieneHijoIzquierdo():
@@ -123,30 +123,10 @@ class ABB:
                 else:
                     self.raiz = nodo.hijoDerecho
                     self.raiz.padre = None
-            elif nodo.tieneAmbosHijos():  # Caso 3: nodo con dos hijos
-                sucesor = self._buscar_sucesor(nodo)
-                nodo.reemplazarDato(sucesor.clave, sucesor.cargaUtil, sucesor.hijoIzquierdo, sucesor.hijoDerecho)
-
-                # Actualizar enlaces a padres, considerando si el sucesor era hijo izquierdo o derecho
-                if sucesor.padre != nodo:  # Si el sucesor no es el hijo derecho directo
-                    sucesor.padre.hijoIzquierdo = sucesor.hijoDerecho
-                    if sucesor.hijoDerecho:
-                        sucesor.hijoDerecho.padre = sucesor.padre
-                else:
-                    nodo.hijoDerecho = sucesor.hijoDerecho
-                    if sucesor.hijoDerecho:
-                        sucesor.hijoDerecho.padre = nodo
-
-                # Enlazar el subárbol izquierdo del sucesor al nodo original
-                nodo.hijoIzquierdo = sucesor.hijoIzquierdo
-                if sucesor.hijoIzquierdo:
-                    sucesor.hijoIzquierdo.padre = nodo
-
-                self._eliminar_nodo(sucesor)
 
     def _buscar_sucesor(self, nodo):
         sucesor = nodo.hijoDerecho
-        while sucesor.tieneHijoIzquierdo():
+        while sucesor and sucesor.tieneHijoIzquierdo():
             sucesor = sucesor.hijoIzquierdo
         return sucesor
 
@@ -182,6 +162,3 @@ class ABB:
 
     def __len__(self):
         return self.tamano
-
-
-

@@ -148,7 +148,7 @@ class JuegoGuerra:
             if len(self.mazo_completo) > 0:
                 self.jugador2.append(self.mazo_completo.sacar_carta_arriba())
 
-    def iniciar_juego(self, ver_partida=False, velocidad=0.5):
+    def iniciar_juego(self, ver_partida=False, velocidad=0.1):
         """Inicia la partida simulando turnos hasta que un jugador gane o haya empate.
         - ver_partida: Si es True, muestra cada turno en detalle.
         - velocidad: Tiempo de espera entre cada ronda en segundos (solo si ver_partida=True)."""
