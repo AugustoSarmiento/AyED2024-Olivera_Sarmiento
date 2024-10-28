@@ -1,9 +1,9 @@
 class Aldea:
     def __init__(self, nombre):
         self.__nombre = nombre
-        self.__vecinos = {}  # Diccionario de aldeas vecinas y sus distancias
-        self.__predecesor = None  # Aldea desde la que se recibe la noticia
-        self.__replica_a = []  # Aldeas a las que se enviarán réplicas
+        self.__vecinos = {}
+        self.__predecesor = None
+        self.__replica_a = [] 
     
     # Getters y setters
     def get_nombre(self):
@@ -34,15 +34,12 @@ class SistemaDePalomas:
         self.cargar_aldeas(archivo)
     
     def cargar_aldeas(self, archivo):
-    # Cargar las aldeas y sus conexiones desde un archivo de texto
         with open(archivo, 'r') as f:
             for linea in f:
-                # Ignorar líneas vacías o líneas mal formateadas
                 partes = linea.strip().split(',')
                 
-                # Verificar que la línea tenga exactamente 3 elementos
                 if len(partes) != 3:
-                    continue  # Saltar esta línea si no tiene el formato esperado
+                    continue
                 
                 aldea1, aldea2, distancia = partes
                 distancia = int(distancia)
@@ -57,16 +54,14 @@ class SistemaDePalomas:
 
 
     def prim(self, inicio):
-        # Inicialización del algoritmo de Prim
-        no_visitados = set(self.__aldeas.values())  # Conjunto de aldeas no visitadas
-        visitados = set()  # Conjunto de aldeas visitadas
-        aristas_mst = []  # Lista de las aristas en el Árbol de Expansión Mínimo
+        no_visitados = set(self.__aldeas.values())
+        visitados = set()
+        aristas_mst = []
         total_distancia = 0
         
-        # Comenzamos desde la aldea de inicio (Peligros)
+    
         visitados.add(inicio)
 
-        # Bucle principal de Prim
         while len(visitados) < len(self.__aldeas):
             # Encontrar la arista más corta que conecte una aldea visitada con una no visitada
             aldea_actual = None
@@ -112,26 +107,3 @@ class SistemaDePalomas:
             if aldea.get_predecesor():
                 suma += aldea.get_vecinos()[aldea.get_predecesor()]
         return suma
-
-
-# Implementación en main
-def main():
-    # Instanciar el sistema de palomas con un archivo que contiene las aldeas y sus distancias
-    archivo = 'docs/aldeas.txt'  # Este archivo debe contener las conexiones de las aldeas
-    sistema = SistemaDePalomas(archivo)
-    
-    # Aldea Peligros es la de inicio
-    aldea_inicio = sistema._SistemaDePalomas__aldeas['Peligros']
-    
-    # Ejecutar el algoritmo de Prim para encontrar el Árbol de Expansión Mínimo
-    total_distancia = sistema.prim(aldea_inicio)
-    
-    # Mostrar los resultados
-    sistema.mostrar_resultados()
-    
-    # Mostrar la suma total de distancias recorridas
-    print(f'Suma total de distancias recorridas por las palomas: {total_distancia} leguas')
-
-
-if __name__ == '__main__':
-    main()
