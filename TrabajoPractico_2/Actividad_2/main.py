@@ -1,30 +1,36 @@
-from modules.Temperaturas_DB import Temperaturas_DB
-from modules.Temperaturas_DB import generar_fechas_aleatorias
 import random
+from datetime import datetime, timedelta
+from modules.Temperaturas_DB import Temperaturas_DB
 
+# Crear una instancia de la base de datos de temperaturas
+db = Temperaturas_DB()
 
-from datetime import datetime
-# Crear la base de datos de temperaturas
-temperaturas_db = Temperaturas_DB()
+# Generar 100 muestras aleatorias
+for _ in range(100):
+    # Generar una fecha aleatoria en los últimos 100 días
+    fecha = datetime.now() - timedelta(days=random.randint(0, 100))
+    fecha_str = fecha.strftime("%d/%m/%Y")
+    
+    # Generar una temperatura aleatoria entre -30°C y 50°C
+    temperatura = round(random.uniform(-30, 50), 2)
+    
+    # Intentar guardar la muestra en la base de datos
+    try:
+        db.guardar_temperatura(temperatura, fecha_str)
+    except ValueError as e:
+        print(f"Advertencia: {e}")  # Opcional: imprimir advertencia si la fecha ya existe
+        continue  # Continuar con la siguiente muestra en caso de fecha duplicada
 
-# Rango de fechas para las mediciones
-start_date = datetime.strptime("01/01/2020", "%d/%m/%Y")
-end_date = datetime.strptime("31/12/2020", "%d/%m/%Y")
+# Ejemplo de pruebas
+print("Cantidad de muestras:", db.cantidad_muestras())
+print("Temperatura en una fecha específica:", db.devolver_temperatura("01/01/2023"))
 
-    # Generar 100 fechas aleatorias
-fechas_aleatorias = generar_fechas_aleatorias(100, start_date, end_date)
+# Ejemplo de rango de fechas
+fecha_inicio = "01/01/2023"
+fecha_fin = datetime.now().strftime("%d/%m/%Y")
 
-    # Generar temperaturas aleatorias y guardarlas en la base de datos
-for fecha in fechas_aleatorias:
-    temperatura = round(random.uniform(-30, 50), 2)  # Temperatura entre -30 y 50 ºC
-    temperaturas_db.guardar_temperatura(temperatura, fecha)
-
-    # Ejemplo de uso de la base de datos
-print("Cantidad de muestras:", temperaturas_db.cantidad_muestras())
-print("Temperaturas en el rango 01/01/2020 a 31/12/2020:")
-print(temperaturas_db.devolver_temperaturas("01/01/2020", "31/12/2020"))
-print("Temperatura en 15/07/2020:", temperaturas_db.devolver_temperatura("15/07/2020"))
-print("Temperatura máxima entre 01/06/2020 y 30/06/2020:", temperaturas_db.max_temp_rango("01/06/2020", "30/06/2020"))
-print("Temperatura mínima entre 01/06/2020 y 30/06/2020:", temperaturas_db.min_temp_rango("01/06/2020", "30/06/2020"))
-print("Temperaturas mínimas y máximas entre 01/06/2020 y 30/06/2020:", temperaturas_db.temp_extremos_rango("01/06/2020", "30/06/2020"))
-
+print("Temperatura máxima en rango:", db.max_temp_rango(fecha_inicio, fecha_fin))
+print("Temperatura mínima en rango:", db.min_temp_rango(fecha_inicio, fecha_fin))
+print("Temperaturas en el rango:")
+for temp in db.devolver_temperaturas(fecha_inicio, fecha_fin):
+    print(temp)
