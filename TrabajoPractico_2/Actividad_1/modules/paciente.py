@@ -1,33 +1,34 @@
-from random import randint, choices
+# paciente.py
 
-nombres = ['Leandro', 'Mariela', 'Gastón', 'Andrea', 'Antonio', 'Estela', 'Jorge', 'Agustina']
-apellidos = ['Perez', 'Colman', 'Rodriguez', 'Juarez', 'García', 'Belgrano', 'Mendez', 'Lopez']
-niveles_de_riesgo = [1, 2, 3]
-descripciones_de_riesgo = ['crítico', 'moderado', 'bajo']
-probabilidades = [0.1, 0.3, 0.6]
+import datetime
 
 class Paciente:
-    def __init__(self):
-        self.__nombre = nombres[randint(0, len(nombres) - 1)]
-        self.__apellido = apellidos[randint(0, len(apellidos) - 1)]
-        self.__riesgo = choices(niveles_de_riesgo, probabilidades)[0]
-        self.__descripcion = descripciones_de_riesgo[self.__riesgo - 1]
+    def __init__(self, nivel_riesgo, hora_llegada):
+        self._nivel_riesgo = nivel_riesgo
+        self._hora_llegada = hora_llegada
 
     @property
-    def nombre(self):
-        return self.__nombre
+    def nivel_riesgo(self):
+        return self._nivel_riesgo
+
+    @nivel_riesgo.setter
+    def nivel_riesgo(self, nivel_riesgo):
+        self._nivel_riesgo = nivel_riesgo
 
     @property
-    def apellido(self):
-        return self.__apellido
+    def hora_llegada(self):
+        return self._hora_llegada
 
-    @property
-    def riesgo(self):
-        return self.__riesgo
+    @hora_llegada.setter
+    def hora_llegada(self, hora_llegada):
+        self._hora_llegada = hora_llegada
 
-    @property
-    def descripcion_riesgo(self):
-        return self.__descripcion
+    def __lt__(self, other):
+        # Comparación por nivel de riesgo primero, luego por hora de llegada
+        if self.nivel_riesgo == other.nivel_riesgo:
+            return self.hora_llegada < other.hora_llegada
+        return self.nivel_riesgo < other.nivel_riesgo
 
-    def __str__(self):
-        return f"{self.__nombre} {self.__apellido} -> {self.__riesgo}-{self.__descripcion}"
+    def __repr__(self):
+        return f"Paciente(Riesgo={self.nivel_riesgo}, Hora={self.hora_llegada})"
+
