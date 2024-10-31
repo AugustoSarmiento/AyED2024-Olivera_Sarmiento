@@ -3,8 +3,8 @@
 import random
 import datetime
 import time
-from min_heap import MinHeap
-from paciente import Paciente
+from modules.min_heap import MinHeap
+from modules.paciente import Paciente
 
 def generar_paciente():
     nivel_riesgo = random.randint(1, 3)
