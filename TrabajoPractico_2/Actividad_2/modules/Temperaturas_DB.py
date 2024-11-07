@@ -41,7 +41,10 @@ class Temperaturas_DB:
     # Método para devolver la temperatura de una fecha específica
     def devolver_temperatura(self, fecha_str):
         fecha = datetime.strptime(fecha_str, "%d/%m/%Y")
-        return self.arbol.buscar(self.raiz, fecha)
+        try:
+            return self.arbol.buscar(self.raiz, fecha)
+        except ValueError:
+            return "Fecha no encontrada"
 
     # Método para obtener la temperatura máxima en un rango de fechas
     def max_temp_rango(self, fecha1_str, fecha2_str):

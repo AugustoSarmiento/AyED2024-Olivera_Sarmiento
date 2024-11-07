@@ -23,7 +23,7 @@ for _ in range(100):
 
 # Ejemplo de pruebas
 print("Cantidad de muestras:", db.cantidad_muestras())
-print("Temperatura en una fecha específica:", db.devolver_temperatura("01/01/2023"))
+print("Temperatura en una fecha específica:", db.devolver_temperatura("01/10/2024"))
 
 # Ejemplo de rango de fechas
 fecha_inicio = "01/01/2023"
