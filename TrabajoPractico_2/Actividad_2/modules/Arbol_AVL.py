@@ -1,7 +1,7 @@
 class NodoAVL:
-    def __init__(self, fecha, temperatura):
+    def __init__(self, fecha, valor):
         self.fecha = fecha
-        self.temperatura = temperatura
+        self.valor = valor
         self.altura = 1
         self.izquierda = None
         self.derecha = None
@@ -35,14 +35,14 @@ class AVLTree:
         y.altura = max(self.obtener_altura(y.izquierda), self.obtener_altura(y.derecha)) + 1
         return y
 
-    def insertar(self, nodo, fecha, temperatura):
+    def insertar(self, nodo, fecha, valor):
         if not nodo:
-            return NodoAVL(fecha, temperatura)
+            return NodoAVL(fecha, valor)
 
         if fecha < nodo.fecha:
-            nodo.izquierda = self.insertar(nodo.izquierda, fecha, temperatura)
+            nodo.izquierda = self.insertar(nodo.izquierda, fecha, valor)
         else:
-            nodo.derecha = self.insertar(nodo.derecha, fecha, temperatura)
+            nodo.derecha = self.insertar(nodo.derecha, fecha, valor)
 
         nodo.altura = max(self.obtener_altura(nodo.izquierda), self.obtener_altura(nodo.derecha)) + 1
 
@@ -68,7 +68,7 @@ class AVLTree:
         if not nodo:
             raise ValueError("Fecha no encontrada.")
         if fecha == nodo.fecha:
-            return nodo.temperatura
+            return nodo.valor
         elif fecha < nodo.fecha:
             return self.buscar(nodo.izquierda, fecha)
         else:
@@ -95,7 +95,7 @@ class AVLTree:
 
             temp = self.min_value_node(nodo.derecha)
             nodo.fecha = temp.fecha
-            nodo.temperatura = temp.temperatura
+            nodo.valor = temp.valor
             nodo.derecha = self.eliminar(nodo.derecha, temp.fecha)
 
         if nodo is None:
@@ -125,7 +125,7 @@ class AVLTree:
             return
         if fecha1 <= nodo.fecha <= fecha2:
             self.inorden_rango(nodo.izquierda, fecha1, fecha2, resultados)
-            resultados.append((nodo.fecha, nodo.temperatura))
+            resultados.append((nodo.fecha, nodo.valor))
             self.inorden_rango(nodo.derecha, fecha1, fecha2, resultados)
         elif nodo.fecha < fecha1:
             self.inorden_rango(nodo.derecha, fecha1, fecha2, resultados)
