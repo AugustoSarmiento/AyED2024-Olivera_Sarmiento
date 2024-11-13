@@ -5,4 +5,5 @@ archivo = "C:/AyED2024-Olivera_Sarmiento/TrabajoPractico_2/Actividad_3/docs/alde
 grafo = cargar_grafo_desde_archivo(archivo)
 arbol_mst = prim(grafo, "Peligros")
 
-mostrar_resultados(grafo) 
+# Aquí se pasa arbol_mst en lugar de grafo
+mostrar_resultados(arbol_mst)

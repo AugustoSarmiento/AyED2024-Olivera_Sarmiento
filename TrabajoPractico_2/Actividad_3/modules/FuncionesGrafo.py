@@ -1,21 +1,17 @@
 from modules.Grafo import Grafo
 
-def mostrar_resultados(grafo):
-    nombres_aldeas = sorted(grafo.obtener_vertices())
-    print("Lista de Aldeas en orden alfabético:")
-    for nombre in nombres_aldeas:
-        print(nombre)
+from modules.AlgoritmoPrim import prim
 
+def mostrar_resultados(arbol_mst):
     print("\nRutas de envío de noticias:")
+    
     total_distancia = 0
-    for vertice in grafo:
-        predecesor = vertice.obtener_predecesor()
-        if predecesor:
-            distancia = vertice.obtener_distancia()
-            total_distancia += distancia
-            print(f"Desde {predecesor.obtener_id()} se envía a {vertice.obtener_id()} con distancia {distancia} leguas.")
+    for origen, destino, distancia in arbol_mst.conexiones:
+        total_distancia += distancia
+        print(f"Desde {origen} se envía a {destino} con distancia {distancia} leguas.")
 
-    print(f"\nSuma total de distancias recorridas: {total_distancia} leguas.")
+    print(f"\nSuma total de distancias recorridas en el MST: {total_distancia} leguas.")
+
 
 
 def cargar_grafo_desde_archivo(nombre_archivo):
